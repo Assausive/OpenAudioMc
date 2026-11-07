@@ -27,6 +27,10 @@ public class VelocityUserAdapter implements User<CommandSource> {
             .hexColors()
             .build();
 
+    // note: always build click/hover events through the static factories below, never through
+    // ClickEvent.Action/HoverEvent.Action constants. we compile against the adventure bundled with
+    // velocity-api 3.1.0, but newer proxies (velocity 4.x) ship adventure 5, where those enum
+    // constants are gone and direct references blow up with a NoSuchFieldError at runtime
     private CommandSource sender;
 
     @Override
@@ -57,10 +61,10 @@ public class VelocityUserAdapter implements User<CommandSource> {
         String msgText = translateColors(t);
         Component message = LEGACY.deserialize(Objects.requireNonNull(msgText));
 
-        message = message.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/" + command));
+        message = message.clickEvent(ClickEvent.runCommand("/" + command));
 
         String hoverText = translateColors(hoverMessage);
-        message = message.hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, LEGACY.deserialize(Objects.requireNonNull(hoverText))));
+        message = message.hoverEvent(HoverEvent.showText(LEGACY.deserialize(Objects.requireNonNull(hoverText))));
 
         sender.sendMessage(message);
     }
@@ -78,10 +82,10 @@ public class VelocityUserAdapter implements User<CommandSource> {
         String msgText = translateColors(t);
         Component message = LEGACY.deserialize(Objects.requireNonNull(msgText));
 
-        message = message.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.OPEN_URL, url));
+        message = message.clickEvent(ClickEvent.openUrl(url));
 
         String hoverText = translateColors(hoverMessage);
-        message = message.hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, LEGACY.deserialize(Objects.requireNonNull(hoverText))));
+        message = message.hoverEvent(HoverEvent.showText(LEGACY.deserialize(Objects.requireNonNull(hoverText))));
 
         sender.sendMessage(message);
     }
